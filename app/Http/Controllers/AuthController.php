@@ -26,4 +26,9 @@ class AuthController extends Controller
 
         Auth::attempt($validated, $request->filled('remember'));
     }
+
+    public function logout()
+    {
+        
+    }
 }

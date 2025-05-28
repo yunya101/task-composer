@@ -10,9 +10,8 @@ class DashboardController extends Controller
     //TODO
     public function __invoke()
     {
-        if (Auth::check()) {
-            return view('dashboard');
-        }
-        return view('welcome');
+        $groups = Auth::user()->groups()->get();
+
+        return view('dashboard', compact('groups'));
     }
 }

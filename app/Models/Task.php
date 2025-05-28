@@ -16,4 +16,9 @@ class Task extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function executor()
+    {
+        return $this->hasOne(User::class, 'executor');
+    }
 }
