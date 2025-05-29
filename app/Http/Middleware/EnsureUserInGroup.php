@@ -15,6 +15,8 @@ class EnsureUserInGroup
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+
+     //TODO проверку на активного пользователяы
     public function handle(Request $request, Closure $next): Response
     {
         $group = $request->route('group');

@@ -32,7 +32,6 @@ class GroupController extends Controller
         $emails = $data['members'] == "" ? [] : explode(' ', $data['members']);
         $error = '';
         $ids = array();
-        $ids[] = Auth::id();
 
         $not_found = array();
 
@@ -47,6 +46,7 @@ class GroupController extends Controller
             }
         }
 
+        $group->users()->attach(Auth::id(), ['is_active' => true]);
         $group->users()->attach($ids);
 
         if (empty($not_found)) {

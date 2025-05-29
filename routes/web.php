@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureUserInGroup;
@@ -62,6 +63,15 @@ Route::controller(AuthController::class)
         Route::post('authentication', 'authentication')->name('authentication');
     });
 Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::controller(NotificationController::class)->name('notifications.')
+    ->middleware(['auth', 'verified'])
+    ->prefix('notifications')
+    ->group(function() {
+        Route::get('/', 'index')->name('index');
+        Route::post('accept/{group}', 'accept')->name('accept');
+        Route::post('reject/{group}', 'reject')->name('reject');
+    });
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');

@@ -27,6 +27,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('groups.create') }}">Создать группу</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('notifications.index') }}">Уведомления</a>
+                        </li>
                         <form action="{{ route('logout') }}" method="post">
                             @csrf
                             <button type="submit" class="btn btn-outline-danger btn-sm">Выйти</button>

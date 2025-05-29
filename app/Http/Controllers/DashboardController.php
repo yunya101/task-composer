@@ -10,7 +10,7 @@ class DashboardController extends Controller
     //TODO
     public function __invoke()
     {
-        $groups = Auth::user()->groups()->get();
+        $groups = Auth::user()->groups()->wherePivot('is_active', true)->get();
 
         return view('dashboard', compact('groups'));
     }
