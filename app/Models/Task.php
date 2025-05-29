@@ -19,6 +19,6 @@ class Task extends Model
 
     public function executor()
     {
-        return $this->hasOne(User::class, 'executor');
+        return $this->belongsTo(User::class, 'executor');
     }
 }

@@ -38,5 +38,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Group::class);
     }
-
 }

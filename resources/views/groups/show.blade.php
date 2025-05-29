@@ -20,13 +20,35 @@
         <h2>В группе отсутствуют задачи</h2>
     @else
         <div class="row">
-            @foreach ($tasks as $taks)
+            @foreach ($tasks as $task)
                 <div class="col-2 ms-3 border border-secondary rounded p-3">
                     <a href="{{ route('tasks.show', ['group' => $group, 'task' => $task]) }}">{{ $task->title }}</a>
-                    <p>Исполнитель: {{ $task->executor()->name }}</p>
+                    <p>Исполнитель: {{ $task->executor()->first()->name }}</p>
                 </div>
             @endforeach
         </div>
     @endif
+
+    <div class="row text-center">
+        <div class="col-2 offset-5 mt-3 border border-secondary rounded p-3">
+            <h4>Создать задачу</h4>
+            <form action="{{ route('tasks.store', ['group' => $group])  }}" method="post">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label">Название задачи</label>
+                    <input type="text" class="form-control" name="title">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Дата выполнения</label>
+                    <input type="datetime-local" class="form-control" name="deadline">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Описание задачи</label>
+                    <input type="text" class="form-control" name="description" placeholder="необязательно">
+                </div>
+                <button type="submit" class="btn btn-outline-dark btn-sm">Создать</button>
+            </form>
+        </div>
+    </div>
 
 @endsection
