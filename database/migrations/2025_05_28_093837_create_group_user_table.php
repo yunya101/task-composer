@@ -19,8 +19,8 @@ return new class extends Migration
             $table->index('group_id');
             $table->index('user_id');
 
-            $table->foreign('group_id')->on('groups')->references('id');
-            $table->foreign('user_id')->on('users')->references('id');
+            $table->foreign('group_id')->on('groups')->references('id')->cascadeOnDelete();
+            $table->foreign('user_id')->on('users')->references('id')->cascadeOnDelete();
         });
     }
 

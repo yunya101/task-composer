@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
-    
+
     public function show(Group $group)
     {
         $tasks = $group->tasks()->get();
@@ -40,8 +40,7 @@ class GroupController extends Controller
 
             if ($user === null) {
                 $not_found[] = $user;
-            }
-            else {
+            } else {
                 $ids[] = $user->id;
             }
         }
@@ -51,8 +50,7 @@ class GroupController extends Controller
 
         if (empty($not_found)) {
             return redirect()->route('dashboard')->with('message', 'Группа успешно создана');
-        }
-        else {
+        } else {
             $error = 'Пользователи с email: ';
             foreach ($not_found as $email) {
                 $error = $error . " $email ";
@@ -63,4 +61,49 @@ class GroupController extends Controller
         }
 
     }
+
+    public function edit(Group $group, Request $request)
+    {
+        $data = $request->validate([
+            'title' => ['string', 'required'],
+            'members' => ['nullable'],
+        ]);
+
+        $emails = $data['members'] == "" ? [] : explode(' ', $data['members']);
+        $error = '';
+        $ids = array();
+
+        $not_found = array();
+
+        foreach ($emails as $email) {
+            $user = User::where('email', $email)->first();
+
+            if ($user === null) {
+                $not_found[] = $user;
+            } else {
+                $ids[] = $user->id;
+            }
+        }
+        $group->users()->attach($ids);
+
+        if (empty($not_found)) {
+            return redirect()->route('dashboard')->with('message', 'Группа успешно создана');
+        } else {
+            $error = 'Пользователи с email: ';
+            foreach ($not_found as $email) {
+                $error = $error . " $email ";
+            }
+            $error = $error . ' не были найдены';
+
+            return redirect()->route('dashboard')->withErrors($error);
+        }
+    }
+
+    public function delete(Group $group)
+    {
+        $group->delete();
+
+        return redirect()->route('dashboard');
+    }
+
 }

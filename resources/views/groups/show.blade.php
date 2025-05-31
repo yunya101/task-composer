@@ -13,6 +13,11 @@
                 <input type="text" class="form-control">
                 <button type="submit" class="btn btn-outline-secondary btn-sm mt-3">Подтвердить</button>
             </form>
+            <form action="{{ route('groups.delete', ['group' => $group]) }}" method="post">
+                @csrf
+                @method('delete')
+                <button class="btn btn-danger btn-sm mt-3">Удалить группу</button>
+            </form>
         </div>
     </div>
 

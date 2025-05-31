@@ -52,4 +52,11 @@ class TaskController extends Controller
 
         return redirect()->back();
     }
+
+    public function delete(Group $group, Task $task)
+    {
+        $task->delete();
+
+        return redirect()->route('dashboard');
+    }
 }

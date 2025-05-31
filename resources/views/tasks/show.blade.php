@@ -35,6 +35,11 @@
                 </div>
                 <button type="submit" class="btn btn-outline-dark btn-sm">Обновить</button>
             </form>
+            <form action="{{ route('tasks.delete', ['group' => $group, 'task' => $task]) }}" method="post">
+                @method('delete')
+                @csrf
+                <button type="submit" class="btn btn-danger btn-sm mt-3">Удалить задачу</button>
+            </form>
         </div>
         <div class="col-3 border border-secondary rounded p-3 d-flex flex-column">
             <h4 class="border-bottom p-1">Комментарии</h4>

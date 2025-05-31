@@ -22,6 +22,7 @@ Route::controller(UserController::class)->name('users.')
     ->group(function () {
         Route::get('/{user}', 'show')->name('show');
         Route::delete('delete', 'delete')->name('delete');
+        Route::put('edit', 'edit')->name('edit');
     });
 Route::post('users', [UserController::class, 'store'])->name('users.store');
 
