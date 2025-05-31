@@ -13,9 +13,15 @@ class TaskController extends Controller
     
     public function show(Group $group, Task $task)
     {
-        $members = $group->users()->wherePivot('is_active', true)->get();
+        $members_row = $group->users()->wherePivot('is_active', true)->get();
+        $comments = $task->comments()->get();
+        $members = array();
 
-        return view('tasks.show', compact(['group', 'task', 'members']));
+        foreach ($members_row as $user) {
+            $members[$user->id] = $user;
+        }
+
+        return view('tasks.show', compact(['group', 'task', 'members', 'comments']));
     }
 
     public function store(Group $group, Request $request)

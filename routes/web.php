@@ -48,11 +48,11 @@ Route::controller(TaskController::class)->name('tasks.')
         Route::delete('{task}', 'delete')->name('delete');
     });
 
-Route::controller(CommentController::class)->name('comments')
-    ->prefix('{group}/tasks/{task_id}/comments')
+Route::controller(CommentController::class)->name('comments.')
+    ->prefix('{group}/tasks/{task}/comments')
     ->middleware(['auth', 'verified', EnsureUserInGroup::class])
     ->group(function () {
-        Route::post('/', 'store');
+        Route::post('/', 'store')->name('store');
     });
 
 Route::controller(AuthController::class)

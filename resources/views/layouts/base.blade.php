@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <title>@yield('name')</title>
 </head>
 
@@ -22,18 +23,17 @@
                 @auth
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{{ route('account') }}">Аккаунт</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('groups.create') }}">Создать группу</a>
+                            <a class="nav-link" aria-current="page" href="{{ route('account') }}">Аккаунт</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('notifications.index') }}">Уведомления</a>
                         </li>
-                        <form action="{{ route('logout') }}" method="post">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Выйти</button>
-                        </form>
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="post">
+                                @csrf
+                                <button type="submit" class="nav-link">Выйти</button>
+                            </form>
+                        </li>
                     </ul>
                 @endauth
             </div>
@@ -46,9 +46,9 @@
                 <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
-                    @endforeach    
-                </ul> 
-            </div>    
+                    @endforeach
+                </ul>
+            </div>
         @endif
         <div class="container">
             @yield('main')
