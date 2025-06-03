@@ -24,7 +24,9 @@ class AuthController extends Controller
             'password' => ['required', 'string']
         ]);
 
-        Auth::attempt($validated, $request->filled('remember'));
+        if (!Auth::attempt($validated, $request->filled('remember'))) {
+            return redirect()->route('login')->withErrors('Incorrect email or password');
+        }
 
         return redirect()->route('dashboard');
     }

@@ -20,7 +20,6 @@ Route::controller(UserController::class)->name('users.')
     ->prefix('users')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-        Route::get('/{user}', 'show')->name('show');
         Route::delete('delete', 'delete')->name('delete');
         Route::put('edit', 'edit')->name('edit');
     });
@@ -31,9 +30,7 @@ Route::controller(GroupController::class)->name('groups.')
     ->middleware(['auth', 'verified'])
     ->group(function () {
         Route::get('{group}', 'show')->name('show')->middleware(EnsureUserInGroup::class);
-        Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
-        Route::get('update/{group}', 'update')->name('update')->middleware(EnsureUserInGroup::class);
         Route::put('edit/{group}', 'edit')->name('edit')->middleware(EnsureUserInGroup::class);
         Route::delete('delete/{group}', 'delete')->name('delete')->middleware(EnsureUserInGroup::class);
     });
@@ -42,7 +39,6 @@ Route::controller(TaskController::class)->name('tasks.')
     ->prefix('{group}/tasks')
     ->middleware(['auth', 'verified', EnsureUserInGroup::class])
     ->group(function () {
-        Route::get('/', 'index')->name('index');
         Route::get('{task}', 'show')->name('show');
         Route::post('/', 'store')->name('store');
         Route::put('{task}/edit', 'edit')->name('edit');
