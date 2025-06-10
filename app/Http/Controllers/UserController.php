@@ -27,17 +27,15 @@ class UserController extends Controller
     public function edit(Request $request)
     {
         $data = $request->validate([
-            'name' => ['string', 'required', 'max:50'],
-            'email' => ['email', 'required'],
+            'name' => ['string', 'nullable', 'max:50'],
+            'email' => ['email', 'nullable'],
             'password' => ['string', 'nullable', 'min:5', 'max:50', 'confirmed'],
         ]);
 
         $user = Auth::user();
-        $user->name = $data['name'];
-        $user->email = $data['email'];
-        if ($data['password']) {
-            $user->password = $data['password'];
-        }
+        $user->name = $data['name'] ?? $user->name;
+        $user->email = $data['email'] ?? $user->email;
+        $user->password = $data['password'] ?? $user->password;
 
         $user->update();
 

@@ -30,6 +30,11 @@
                 </div>
                 <button type="submit" class="btn btn-outline-success">Сохранить</button>
             </form>
+            <form class="mt-3" action="{{ route('users.delete') }}" method="post">
+                @csrf
+                @method('delete')
+                <button class="btn btn-danger" type="submit">Удалить аккаунт</button>
+            </form>
         </div>
     </div>
 @endsection

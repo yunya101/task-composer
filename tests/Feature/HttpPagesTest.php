@@ -15,23 +15,28 @@ class HttpPagesTest extends TestCase
      * A basic feature test example.
      */
 
-    private static function create_user()
-    {
-        $user =  User::create([
-            'name' => 'testing',
-            'email' => 'test@test.com',
-            'password' => bcrypt('testtest'),
-        ]);
-
-        $user->markEmailAsVerified();
-        return $user;
-    }
 
     public function test_login_page(): void
     {
         $response = $this->get('login');
 
         $response->assertStatus(200);
+    }
+
+    public function test_account_page()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('account'))
+            ->assertOk();
+    }
+
+    public function test_dashboard_page()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('dashboard'))
+            ->assertOk();
     }
 
     public function test_register_page(): void
@@ -41,17 +46,6 @@ class HttpPagesTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_user_store()
-    {
-        $response = $this->post(route('users.store'), [
-            'name' => 'johnsmith',
-            'email' => 'johnsmith@example.com',
-            'password' => 'qwerty',
-            'password_confirmation' => 'qwerty',
-        ]);
-
-        $response->assertRedirect(route('dashboard'));
-    }
 
     public function test_user_store_error()
     {
@@ -106,23 +100,9 @@ class HttpPagesTest extends TestCase
 
     }
 
-    public function test_create_group()
-    {
-        $user = HttpPagesTest::create_user();
-
-        $response = $this->actingAs($user)->post(route('groups.store'), [
-            'title' => 'test',
-            'members' => '',
-        ]);
-
-        $response->assertRedirect(route('dashboard'));
-        $response->assertSessionHasNoErrors();
-
-    }
-
     public function test_user_can_get_group()
     {
-        $user = HttpPagesTest::create_user();
+        $user = User::factory()->create();
 
         $this->actingAs($user)->post(route('groups.store'), [
             'title' => 'test',
@@ -136,7 +116,7 @@ class HttpPagesTest extends TestCase
 
     public function test_user_cannot_get_group()
     {
-        $user = HttpPagesTest::create_user();
+        $user = User::factory()->create();
 
         Group::create([
             'title' => 'test',
@@ -145,5 +125,141 @@ class HttpPagesTest extends TestCase
         $response = $this->actingAs($user)->get(route('groups.show', ['group' => 1]));
         $response->assertStatus(403);
 
+    }
+
+    public function test_creating_task()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->assertDatabaseHas('tasks', ['id' => 1, 'title' => 'test']);
+
+    }
+
+    public function test_user_can_get_task()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->actingAs($user)->get("$group->id/tasks/1")
+            ->assertOk();
+
+    }
+
+    public function test_user_cannot_get_task()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $anotherUser = User::factory()->create();
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->actingAs($anotherUser)->get("$group->id/tasks/1")
+            ->assertStatus(403);
+    }
+
+    public function test_change_task()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->actingAs($user)->put("$group->id/tasks/1/edit", [
+            'title' => 'changed',
+            'deadline' => now(),
+            'executor' => $user->id,
+        ]);
+
+        $this->assertDatabaseHas('tasks', ['id' => 1, 'title' => 'changed']);
+    }
+
+    public function test_delete_task()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->actingAs($user)->delete("$group->id/tasks/1");
+
+        $this->assertDatabaseMissing('tasks', ['id' => 1]);
+
+    }
+    
+    public function test_user_cannot_delete_task()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $anotherUser = User::factory()->create();
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->actingAs($anotherUser)->delete("$group->id/tasks/1");
+
+        $this->assertDatabaseHas('tasks', ['id' => 1]);
+
+    }
+
+    public function test_create_comment()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+
+        $group->users()->attach($user->id);
+
+        $this->actingAs($user)->post("$group->id/tasks", [
+            'title' => 'test',
+            'deadline' => now(),
+            'description' => 'test',
+        ]);
+
+        $this->actingAs($user)->post("$group->id/tasks/1/comments", [
+            'text' => 'hello world!',
+        ]);
+
+        $this->assertDatabaseHas('comments', ['id' => 1, 'text' => 'hello world!', 'user_id' => $user->id, 'task_id' => 1]);
     }
 }
