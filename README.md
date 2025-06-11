@@ -17,6 +17,14 @@ git clone https://github.com/yunya101/task-composer
 ```
 docker compose up -d
 ```
+3. Устанавливаем права доступа:
+```
+docker exec -it laravel-app chown -R www-data:www-data /var/www && chmod -R 755 /var/www
+```
+4. Устанавливаем зависимости:
+```
+docker exec -it laravel-app composer install
+```
 4. Запускаем миграции:
 ```
 docker exec -it laravel-app php artisan migrate
