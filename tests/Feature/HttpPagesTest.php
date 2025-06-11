@@ -262,4 +262,58 @@ class HttpPagesTest extends TestCase
 
         $this->assertDatabaseHas('comments', ['id' => 1, 'text' => 'hello world!', 'user_id' => $user->id, 'task_id' => 1]);
     }
+
+    public function test_notification_page()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('notifications.index'))
+            ->assertOk();
+    }
+    
+    public function test_soft_delete_user()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->delete(route('users.delete'));
+
+        $this->assertSoftDeleted('users', ['id' => 1]);
+    }
+
+    public function test_edit_username()
+    {
+        $user = User::factory()->create();
+        $user->name = 'newname';
+
+        $this->actingAs($user)->put(route('users.edit', ['name' => $user->name]));
+
+        $this->assertDatabaseHas('users', ['name' => $user->name]);
+    }
+
+
+    public function test_user_store()
+    {
+        $response = $this->post(route('users.store'), [
+            'name' => 'johnsmith',
+            'email' => 'johnsmith@example.com',
+            'password' => 'qwerty',
+            'password_confirmation' => 'qwerty',
+        ]);
+
+        $this->assertDatabaseHas('users', ['email' => 'johnsmith@example.com']);
+    }
+
+    public function test_create_group()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('groups.store'), [
+            'title' => 'test',
+            'members' => '',
+        ]);
+
+        $this->assertDatabaseHas('groups', ['title' => 'test']);
+
+    }
 }
+
